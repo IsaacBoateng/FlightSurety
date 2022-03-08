@@ -1,11 +1,11 @@
-pragma solidity >=0.4.25;
+pragma solidity >=0.4.25; //FsApp
 
 // It's important to avoid vulnerabilities due to numeric overflow bugs
 // OpenZeppelin's SafeMath library, when used correctly, protects agains such bugs
 // More info: https://www.nccgroup.trust/us/about-us/newsroom-and-events/blog/2018/november/smart-contract-insecurity-bad-arithmetic/
 
 import "../node_modules/openzeppelin-solidity/contracts/math/SafeMath.sol";
-import "./FlightSuretyData.sol";
+
 
 /************************************************** */
 /* FlightSurety Smart Contract                      */
@@ -63,7 +63,7 @@ contract FlightSuretyApp {
     *      This is used on all state changing functions to pause the contract in 
     *      the event there is an issue that needs to be fixed
     */
-    modifier requireisOperational() 
+    modifier requireIsOperational() 
     {
          // Modify to call data contract's status
         require(true, "Contract is currently not operational");  
@@ -163,7 +163,7 @@ contract FlightSuretyApp {
             }
         }
     }
-   // vote_status and continue, u using lucribas and eyong
+   
 
     function approveAirlineRegistration(address airline, bool airline_vote) public requireIsOperational {
         
@@ -511,5 +511,3 @@ contract FlightSuretyData{
     function addVoters(address voter) external;
      
 }    
-
-

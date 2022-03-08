@@ -1,4 +1,4 @@
-pragma solidity ^0.4.25;
+pragma solidity >=0.4.25; //FsData
 
 import "../node_modules/openzeppelin-solidity/contracts/math/SafeMath.sol";
 
@@ -8,11 +8,10 @@ contract FlightSuretyData {
     
 
     /********************************************************************************************/
-    /*                                       DATA VARIABLES                                     */
+    /*                                       DATA/CONTROL VARIABLES                                     */
     /********************************************************************************************/
     
-    // Struct used to hold registered airlines
-    struct Airlines {
+     struct Airlines {
         bool isRegistered;
         bool isOperational;
     }
@@ -28,19 +27,18 @@ contract FlightSuretyData {
     struct Voters {
         bool status;
     }
-
-    address private contractOwner;                                      // Account used to deploy contract
-    bool private operational = true;                                    // Blocks all state changes throughout the contract if false
-
+    
+    address private contractOwner;                            // Account used to deploy contract   
+    bool private operational = true;                                    // Blocks all state changes throughout the contract if false     
+    mapping(address => bool) public authorizedContracts;
     mapping(address => uint256) private authorizedCaller;
+    address[] multiCalls = new address[](0);
     mapping(address => Airlines) airlines;                             // mapping address to struct which holds registered airlines.
     mapping(address => Insurance) insurance;                             // Airline address maps to struct
     mapping(address => uint256) balances;
     mapping(address => Fund) fund;
-    address[] multiCalls = new address[](0);
     mapping(address => uint) private voteCount;
     mapping(address => Voters) voters;
- 
 
     /********************************************************************************************/
     /*                                       EVENT DEFINITIONS                                  */
@@ -89,6 +87,33 @@ contract FlightSuretyData {
         _;
     }
 
+     /**
+    * @dev Modifier that requires an Airline to be registered
+    */
+      modifier requireAirlineRegistered(address airline) {
+        require(airlines[airline].isRegistered, "Airline is not registered");
+        _;
+    }
+
+     /**
+    * @dev Modifier that requires an Airline is not registered yet
+    */
+    modifier requireAirlineIsNotRegistered(address airline) {
+        require(!airlines[airline].isRegistered, "Airline is already registered.");
+        _;
+    }
+
+    /**
+     * @dev Modifier that requires the "ContractAddress" account to be authorized
+     */
+    modifier requireContractAddressAuthorized(address _contractAddress) {
+        require(
+            authorizedContracts[_contractAddress],
+            "ContractAddress is not authorized"
+        );
+        _;
+    }
+
     /********************************************************************************************/
     /*                                       UTILITY FUNCTIONS                                  */
     /********************************************************************************************/
@@ -131,31 +156,31 @@ contract FlightSuretyData {
     function setmultiCalls(address account) private {
         multiCalls.push(account);
     }
-    function multiCallsLength() external requireIsOperational returns(uint){
+    function multiCallsLength() external view requireIsOperational returns(uint256){
         return multiCalls.length;
     }
 
 
     //----------------- Set and Get function for Airline struct ------------------------------
-    function getAirlineOperatingStatus(address account) external requireIsOperational returns(bool){
+    function getAirlineOperatingStatus(address account) external view requireIsOperational returns(bool){
         return airlines[account].isOperational;
     }
 
-    function setAirlineOperatingStatus(address account, bool status) external requireIsOperational {
+    function setAirlineOperatingStatus(address account, bool status) external  requireIsOperational {
         airlines[account].isOperational = status;
     }
 
-    function getAirlineRegistrationStatus(address account) external requireIsOperational returns(bool){
+    function getAirlineRegistrationStatus(address account) external view requireIsOperational returns(bool){
         return airlines[account].isRegistered;
     }
 
-    function getVoteCounter(address account) external requireIsOperational returns(uint){
+    function getVoteCounter(address account) external view requireIsOperational returns(uint){
         return voteCount[account];
     }
     function resetVoteCounter(address account) external requireIsOperational{
         delete voteCount[account];
     }
-    function getVoterStatus(address voter) external requireIsOperational returns(bool){
+    function getVoterStatus(address voter) external view requireIsOperational returns(bool){
         return voters[voter].status;
     }
     function addVoters(address voter) external{
@@ -187,7 +212,7 @@ contract FlightSuretyData {
         });
 
     }
-    function getAirlineFunding(address airline) external returns(uint256){
+    function getAirlineFunding(address airline) external view returns(uint256){
         return fund[airline].amount;
     }
 
@@ -220,10 +245,10 @@ contract FlightSuretyData {
     *      Can only be called from FlightSuretyApp contract
     *
     */   
-    function _registerAirline
+    function registerAirline
                             (   
                                 address account,
-                                bool isOperational
+                                bool _isOperational
                             )
                             external
                             requireIsOperational
@@ -232,7 +257,7 @@ contract FlightSuretyData {
         // isOperational is only true when the airline has submited funding of 10 ether
         airlines[account] = Airlines({
             isRegistered: true,
-            isOperational: isOperational
+            isOperational: _isOperational
         });
         setmultiCalls(account);
     }
@@ -247,7 +272,7 @@ contract FlightSuretyData {
                                 address account
                             )
                             external
-                            
+                            view
                             returns(bool)
     {
         require(account != address(0), "'account' must be a valid address.");
@@ -299,11 +324,11 @@ contract FlightSuretyData {
     }
 
 
-    function getInsuredPassenger_amount(address airline) external requireIsOperational  returns(address, uint256){
+    function getInsuredPassenger_amount(address airline) external view requireIsOperational  returns(address, uint256){
         return (insurance[airline].passenger,insurance[airline].amount);
     }
 
-    function getPassengerCredit(address passenger) external requireIsOperational returns(uint256){
+    function getPassengerCredit(address passenger) external view requireIsOperational returns(uint256){
         return balances[passenger];
     }  
 

@@ -1,4 +1,4 @@
-pragma solidity ^0.4.24; //FsData
+pragma solidity ^0.4.25; 
 
 import "../node_modules/openzeppelin-solidity/contracts/math/SafeMath.sol";
 

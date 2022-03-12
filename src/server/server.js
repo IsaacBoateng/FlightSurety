@@ -5,17 +5,17 @@ import Web3 from 'web3';
 import express from 'express';
 
 var cors = require('cors');
-//const ORACLES_COUNT = 20;
 
-// List of flight numbers
+
+// flight numbers
 const flights = [
-	{ "id": 0, "name": "FLIGHT001" },
-	{ "id": 1, "name": "FLIGHT002" },
-	{ "id": 2, "name": "FLIGHT003" },
-	{ "id": 3, "name": "GOL021123" },
-	{ "id": 4, "name": "TAN343714" },
-	{ "id": 5, "name": "EMI344671" },
-	{ "id": 6, "name": "EMI123764" }
+	{ "id": 0, "name": "AA8025" },
+	{ "id": 1, "name": "AA7991" },
+	{ "id": 2, "name": "AA8017" },
+	{ "id": 3, "name": "BA1388" },
+	{ "id": 4, "name": "BA1476" },
+	{ "id": 5, "name": "BA1442" },
+	{ "id": 6, "name": "GF5232" }
 ]
 
 
@@ -23,7 +23,7 @@ let config = Config['localhost'];
 let web3 = new Web3(new Web3.providers.WebsocketProvider(config.url.replace('http', 'ws')));
 web3.eth.defaultAccount = web3.eth.accounts[0];
 let flightSuretyApp = new web3.eth.Contract(FlightSuretyApp.abi, config.appAddress);
-//let flightSuretyData = new web3.eth.Contract(FlightSuretyData.abi, config.dataAddress);
+
 
 let oracle_address = [];
 

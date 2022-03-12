@@ -24,10 +24,9 @@ export default class DOM {
       return document.getElementById(id);
     }
 
-    // for class
-    static elclass(cls){
+    static elclass(cls) {
       return document.getElementsByClassName(cls);
-
+  
     }
   
     static appendText(el, text) {
@@ -49,8 +48,8 @@ export default class DOM {
     
     static setStyles(el, styles) {
       if (!styles) {
-        el.removeAttribute(`styles`);
-        return;
+          el.removeAttribute(`styles`);
+          return;
       }
     
       Object.keys(styles).forEach((styleName) => {

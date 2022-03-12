@@ -1,12 +1,11 @@
-pragma solidity >=0.4.25; //FsData
+pragma solidity ^0.4.24; //FsData
 
 import "../node_modules/openzeppelin-solidity/contracts/math/SafeMath.sol";
 
+
 contract FlightSuretyData {
-    //using SafeMath for uint;
     using SafeMath for uint256;
     
-
     /********************************************************************************************/
     /*                                       DATA/CONTROL VARIABLES                                     */
     /********************************************************************************************/
@@ -30,14 +29,13 @@ contract FlightSuretyData {
     
     address private contractOwner;                            // Account used to deploy contract   
     bool private operational = true;                                    // Blocks all state changes throughout the contract if false     
-    mapping(address => bool) public authorizedContracts;
     mapping(address => uint256) private authorizedCaller;
     address[] multiCalls = new address[](0);
     mapping(address => Airlines) airlines;                             // mapping address to struct which holds registered airlines.
     mapping(address => Insurance) insurance;                             // Airline address maps to struct
     mapping(address => uint256) balances;
     mapping(address => Fund) fund;
-    mapping(address => uint) private voteCount;
+    mapping(address => uint256) private voteCount;
     mapping(address => Voters) voters;
 
     /********************************************************************************************/
@@ -58,6 +56,10 @@ contract FlightSuretyData {
                                 public 
     {
         contractOwner = msg.sender;
+        
+     
+
+       
     }
 
     /********************************************************************************************/
@@ -98,6 +100,7 @@ contract FlightSuretyData {
      /**
     * @dev Modifier that requires an Airline is not registered yet
     */
+    
     modifier requireAirlineIsNotRegistered(address airline) {
         require(!airlines[airline].isRegistered, "Airline is already registered.");
         _;
@@ -106,6 +109,7 @@ contract FlightSuretyData {
     /**
      * @dev Modifier that requires the "ContractAddress" account to be authorized
      */
+     /*
     modifier requireContractAddressAuthorized(address _contractAddress) {
         require(
             authorizedContracts[_contractAddress],
@@ -113,6 +117,8 @@ contract FlightSuretyData {
         );
         _;
     }
+
+    */
 
     /********************************************************************************************/
     /*                                       UTILITY FUNCTIONS                                  */
@@ -339,25 +345,11 @@ contract FlightSuretyData {
                             string memory flight,
                             uint256 timestamp
                         )
-                        pure
                         internal
+                        pure
                         returns(bytes32) 
     {
         return keccak256(abi.encodePacked(airline, flight, timestamp));
     }
-
-    /**
-    * @dev Fallback function for funding smart contract.
-    *
-    */
-    /*
-    function() 
-                            external 
-                            payable 
-    {
-        fund();
-    }
-    */
-
 
 }

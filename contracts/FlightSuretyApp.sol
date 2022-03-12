@@ -1,11 +1,11 @@
-pragma solidity >=0.4.25; //FsApp
+pragma solidity ^0.4.24; //FsApp
 
 // It's important to avoid vulnerabilities due to numeric overflow bugs
 // OpenZeppelin's SafeMath library, when used correctly, protects agains such bugs
 // More info: https://www.nccgroup.trust/us/about-us/newsroom-and-events/blog/2018/november/smart-contract-insecurity-bad-arithmetic/
 
 import "../node_modules/openzeppelin-solidity/contracts/math/SafeMath.sol";
-
+import "./FlightSuretyData.sol";
 
 /************************************************** */
 /* FlightSurety Smart Contract                      */
@@ -13,6 +13,7 @@ import "../node_modules/openzeppelin-solidity/contracts/math/SafeMath.sol";
 contract FlightSuretyApp {
     using SafeMath for uint256; // Allow SafeMath functions to be called for all uint256 types (similar to "prototype" in Javascript)
 
+     FlightSuretyData flightSuretyData;
     /********************************************************************************************/
     /*                                       DATA VARIABLES                                     */
     /********************************************************************************************/
@@ -25,7 +26,7 @@ contract FlightSuretyApp {
     uint8 private constant STATUS_CODE_LATE_OTHER = 50;
 
     address private contractOwner;          // Account used to deploy contract
-
+    
 
     struct Flight {
         bool  isRegistered;
@@ -37,7 +38,7 @@ contract FlightSuretyApp {
     mapping(bytes32 => Flight) private flights;
 
      
-    FlightSuretyData flightSuretyData;
+    
     bool private voteStatus = false;
     /********************************************************************************************/
     /*                                       Events                                             */
@@ -236,7 +237,7 @@ contract FlightSuretyApp {
 
     }
 
-      function getPassenger_CreditedAmount() external returns (uint256) {
+      function getPassenger_CreditedAmount() external  returns (uint256) {
           uint256 credit = flightSuretyData.getPassengerCredit(msg.sender);
           return credit;
     }
@@ -488,26 +489,4 @@ contract FlightSuretyApp {
     }
 
 
-}   
-// Creating an interface to FlightSuretyData.sol
-contract FlightSuretyData{
-    function registerAirline(address account, bool isOperational) external;
-    function multiCallsLength() external returns(uint);
-    function getAirlineOperatingStatus(address account) external returns(bool);
-    function setAirlineOperatingStatus(address account, bool status) external;
-    function registerInsurance(address airline, address passenger, uint256 amount) external;
-    function creditInsurees(address airline, address passenger, uint256 amount) external;
-    function getInsuredPassenger_amount(address airline) external returns(address, uint256);
-    function getPassengerCredit(address passenger) external returns(uint256);
-    function getAirlineRegistrationStatus(address account) external  returns(bool);
-    function fundAirline(address airline, uint256 amount) external;
-    function getAirlineFunding(address airline) external returns(uint256);
-    function withdraw(address passenger) external returns(uint256);
-    function getVoteCounter(address account) external  returns(uint);
-    function setVoteCounter(address account, uint vote) external;
-    function getVoterStatus(address voter) external returns(bool);
-    function addVoterCounter(address airline, uint count) external;
-    function resetVoteCounter(address account) external;
-    function addVoters(address voter) external;
-     
-}    
+} 
